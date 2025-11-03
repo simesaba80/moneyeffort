@@ -65,7 +65,7 @@ export default function GoalPage() {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="例: 朝食はムキムキになるための食事を摂る"
-            className="w-full p-2 border border-[#486A8A] rounded-lg text-[#486A8A] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#486A8A]"
+            className="w-full p-3 border-b-2 border-gray-300 focus:border-[#486A8A] focus:outline-none text-lg"
             required
           />
         </div>
