@@ -3,7 +3,7 @@ export interface Goal {
     id: string;
     title: string;
     description: string;
-    dueDate: Date;
+    dueDate?: string;
     achieved: boolean;
 }
 

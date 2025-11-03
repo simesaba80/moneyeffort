@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
-import { fetchGoals, fetchGoalHistory } from '../lib/api'
-import { Goal, GoalHistory } from '../types'
+import { fetchGoals, fetchHistory } from '../lib/api'
+import { Goal, Achievement } from '../types'
 
 export const useGoals = () => {
     const [goals, setGoals] = useState<Goal[]>([])
-    const [goalHistory, setGoalHistory] = useState<GoalHistory[]>([])
+    const [goalHistory, setGoalHistory] = useState<Achievement[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
 
@@ -20,7 +20,7 @@ export const useGoals = () => {
 
         const loadGoalHistory = async () => {
             try {
-                const fetchedHistory = await fetchGoalHistory()
+                const fetchedHistory = await fetchHistory()
                 setGoalHistory(fetchedHistory)
             } catch (err) {
                 setError('達成履歴の取得に失敗しました。')
