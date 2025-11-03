@@ -12,7 +12,7 @@ export default function GoalPage() {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        // 🔹 localStorage に保存
+        // localStorage に保存
         localStorage.setItem("goal", goal);
         localStorage.setItem("amount", amount);
         localStorage.setItem("deadline", deadline);

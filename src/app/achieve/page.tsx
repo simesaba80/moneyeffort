@@ -10,6 +10,7 @@ export default function AchievePage() {
     const [file, setFile] = useState<File | null>(null);
     const [showUpload, setShowUpload] = useState(false);
     const [countdown, setCountdown] = useState("");
+    const [isExpired, setIsExpired] = useState(false);
 
     // 🔹 localStorageからデータ取得
     useEffect(() => {
@@ -33,6 +34,7 @@ export default function AchievePage() {
 
             if (distance <= 0) {
                 setCountdown("期限が過ぎました！");
+                setIsExpired(true);
                 clearInterval(interval);
                 return;
             }
@@ -81,12 +83,14 @@ export default function AchievePage() {
 
                 {!showUpload ? (
                     <div className="flex flex-col gap-4">
-                        <button
-                            onClick={handleAchieved}
-                            className="w-full bg-[#486A8A] text-white py-2 rounded-lg font-semibold hover:bg-[#3a5871] transition"
-                        >
-                            達成できた！
-                        </button>
+                        {!isExpired && (
+                            <button
+                                onClick={handleAchieved}
+                                className="w-full bg-[#486A8A] text-white py-2 rounded-lg font-semibold hover:bg-[#3a5871] transition"
+                            >
+                                達成できた！
+                            </button>
+                        )}
                         <button
                             onClick={handleFailed}
                             className="w-full border border-[#486A8A] text-[#486A8A] py-2 rounded-lg font-semibold hover:bg-[#f0f4f8] transition"
