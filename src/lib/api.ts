@@ -4,7 +4,7 @@
 import type { Goal, Achievement } from "@/types";
 
 // Mock data matching src/types
-const mockGoals: Goal[] = [
+const defaultGoals: Goal[] = [
   {
     id: "1",
     title: "毎日運動",
@@ -29,10 +29,84 @@ const mockHistory: Achievement[] = [
   { id: "h3", goalId: "1", dateAchieved: new Date("2025-10-03") },
 ];
 
+const parseGoal = (value: unknown): Goal | null => {
+  if (!value || typeof value !== "object") {
+    return null;
+  }
+
+  const candidate = value as Partial<Goal>;
+
+  if (
+    typeof candidate.id !== "string" ||
+    typeof candidate.title !== "string" ||
+    typeof candidate.deadline !== "string"
+  ) {
+    return null;
+  }
+
+  const parsedAmount = (() => {
+    if (typeof candidate.amount === "number") {
+      return candidate.amount;
+    }
+    if (typeof candidate.amount === "string") {
+      const num = Number(candidate.amount);
+      return Number.isFinite(num) ? num : null;
+    }
+    return null;
+  })();
+
+  if (parsedAmount === null) {
+    return null;
+  }
+
+  return {
+    id: candidate.id,
+    title: candidate.title,
+    description:
+      typeof candidate.description === "string" ? candidate.description : "",
+    deadline: candidate.deadline,
+    amount: parsedAmount,
+    achieved: Boolean(candidate.achieved),
+  };
+};
+
+const loadGoalsFromLocalStorage = (): Goal[] | null => {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  try {
+    const raw = window.localStorage.getItem("goal");
+    if (!raw) {
+      return [];
+    }
+
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) {
+      return [];
+    }
+
+    const goals = parsed
+      .map((item) => parseGoal(item))
+      .filter((goal): goal is Goal => goal !== null);
+
+    return goals;
+  } catch (error) {
+    return [];
+  }
+};
+
 export async function fetchGoals(): Promise<Goal[]> {
   // simulate network latency
   await new Promise((r) => setTimeout(r, 100));
-  return mockGoals;
+
+  const localGoals = loadGoalsFromLocalStorage();
+
+  if (localGoals && localGoals.length > 0) {
+    return localGoals;
+  }
+
+  return defaultGoals;
 }
 
 export async function fetchHistory(): Promise<Achievement[]> {

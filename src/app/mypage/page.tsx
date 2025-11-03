@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { fetchGoals, fetchHistory } from "@/lib/api";
+import { fetchHistory } from "@/lib/api";
 import GoalsSection from "@/components/GoalsSection";
 import HistorySection from "@/components/HistorySection";
 import ProfileOverview from "@/components/ProfileOverview";
@@ -15,14 +15,79 @@ export default function MyPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    const parseGoalsFromLocalStorage = (): Goal[] => {
+      if (typeof window === "undefined") {
+        return [];
+      }
+
+      try {
+        const raw = window.localStorage.getItem("goal");
+        if (!raw) {
+          return [];
+        }
+
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) {
+          return [];
+        }
+
+        const normalizeGoal = (value: unknown): Goal | null => {
+          if (!value || typeof value !== "object") {
+            return null;
+          }
+
+          const candidate = value as Partial<Goal>;
+
+          if (
+            typeof candidate.id !== "string" ||
+            typeof candidate.title !== "string" ||
+            typeof candidate.deadline !== "string"
+          ) {
+            return null;
+          }
+
+          const amount = (() => {
+            if (typeof candidate.amount === "number") {
+              return candidate.amount;
+            }
+            if (typeof candidate.amount === "string") {
+              const numeric = Number(candidate.amount);
+              return Number.isFinite(numeric) ? numeric : null;
+            }
+            return null;
+          })();
+
+          if (amount === null) {
+            return null;
+          }
+
+          return {
+            id: candidate.id,
+            title: candidate.title,
+            description:
+              typeof candidate.description === "string"
+                ? candidate.description
+                : "",
+            deadline: candidate.deadline,
+            amount,
+            achieved: Boolean(candidate.achieved),
+          };
+        };
+
+        return parsed
+          .map((item) => normalizeGoal(item))
+          .filter((goal): goal is Goal => goal !== null);
+      } catch (error) {
+        return [];
+      }
+    };
+
     const loadData = async () => {
       try {
-        const [goalsData, historyData] = await Promise.all([
-          fetchGoals(),
-          fetchHistory(),
-        ]);
-        setGoals(goalsData ?? []);
+        setIsLoading(true);
+        const historyData = await fetchHistory();
         setHistory(historyData ?? []);
+        setGoals(parseGoalsFromLocalStorage());
       } catch (error) {
         setGoals([]);
         setHistory([]);
@@ -32,6 +97,21 @@ export default function MyPage() {
     };
 
     loadData();
+
+    if (typeof window !== "undefined") {
+      const handleStorage = (event: StorageEvent) => {
+        if (event.key === "goal") {
+          setGoals(parseGoalsFromLocalStorage());
+        }
+      };
+
+      window.addEventListener("storage", handleStorage);
+      return () => {
+        window.removeEventListener("storage", handleStorage);
+      };
+    }
+
+    return undefined;
   }, []);
 
   const achievementsCount = history.length;

@@ -1,19 +1,20 @@
 "use client";
 
-import { useEffect, useState, ChangeEvent } from "react";
+import { useEffect, useState, ChangeEvent, use } from "react";
 import { useRouter } from "next/navigation";
 import { fetchGoals } from "@/lib/api";
 import type { Goal } from "@/types";
 
 type AchievePageProps = {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 };
 
 export default function AchievePage({ params }: AchievePageProps) {
   const router = useRouter();
-  const goalId = params.id;
+  const resolvedParams = use(params);
+  const goalId = resolvedParams.id;
 
   const [goal, setGoal] = useState<Goal | null>(null);
   const [isLoading, setIsLoading] = useState(true);
