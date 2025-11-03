@@ -32,7 +32,7 @@ export default function MyPage() {
             {goals.map(goal => (
                 <GoalCard key={goal.id} goal={goal} />
             ))}
-            <h2>達成履歴</h2>
+            
             <HistoryList history={history} />
         </main>
     )
