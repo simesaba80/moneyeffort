@@ -1,7 +1,9 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function GoalPage() {
+    const router = useRouter();
     const [goal, setGoal] = useState("");
     const [amount, setAmount] = useState("");
     const [deadline, setDeadline] = useState("");
@@ -9,7 +11,17 @@ export default function GoalPage() {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+
+        // 🔹 localStorage に保存
+        localStorage.setItem("goal", goal);
+        localStorage.setItem("amount", amount);
+        localStorage.setItem("deadline", deadline);
+
         setSubmitted(true);
+    };
+
+    const handleNext = () => {
+        router.push("/achieve"); // 次のページへ遷移
     };
 
     return (
@@ -64,16 +76,16 @@ export default function GoalPage() {
                 </form>
 
                 {submitted && (
-                    <div className="mt-6 p-4 border-t border-[#486A8A] text-[#486A8A]">
-                        <p>
-                            <strong>目標:</strong> {goal}
-                        </p>
-                        <p>
-                            <strong>金額:</strong> {amount} 円
-                        </p>
-                        <p>
-                            <strong>期限:</strong> {deadline}
-                        </p>
+                    <div className="mt-6 p-4 border-t border-[#486A8A] text-[#486A8A] space-y-1">
+                        <p><strong>目標:</strong> {goal}</p>
+                        <p><strong>金額:</strong> {amount} 円</p>
+                        <p><strong>期限:</strong> {deadline}</p>
+                        <button
+                            onClick={handleNext}
+                            className="mt-4 w-full bg-[#486A8A] text-white py-2 rounded-lg font-semibold hover:bg-[#3a5871] transition"
+                        >
+                            達成確認ページへ →
+                        </button>
                     </div>
                 )}
             </div>
