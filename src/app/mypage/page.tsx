@@ -5,7 +5,7 @@ import HistoryList from '@/components/HistoryList'
 import RankBadge from '@/components/RankBadge'
 import { fetchGoals, fetchHistory } from '@/lib/api'
 import { Goal, Achievement } from '@/types'
-
+import AddGoalButton from '@/components/add_goal'
 export default function MyPage() {
     const [goals, setGoals] = useState<Goal[]>([])
     const [history, setHistory] = useState<Achievement[]>([])
@@ -32,7 +32,7 @@ export default function MyPage() {
             {goals.map(goal => (
                 <GoalCard key={goal.id} goal={goal} />
             ))}
-            
+            <AddGoalButton/>
             <HistoryList history={history} />
         </main>
     )
