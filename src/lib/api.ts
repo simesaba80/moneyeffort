@@ -5,8 +5,8 @@ import type { Goal, Achievement } from '@/types'
 
 // Mock data matching src/types
 const mockGoals: Goal[] = [
-    { id: '1', title: '毎日運動', description: '早起きして運動する', dueDate: new Date('2025-11-30'), achieved: false },
-    { id: '2', title: '英語学習30分', description: '毎日30分英語を勉強する', dueDate: new Date('2025-12-15'), achieved: false },
+    { id: '1', title: '毎日運動', description: '早起きして運動する', dueDate: '2025-11-30', achieved: false },
+    { id: '2', title: '英語学習30分', description: '毎日30分英語を勉強する', dueDate: '2025-12-15', achieved: false },
 ]
 
 const mockHistory: Achievement[] = [
