@@ -1,65 +1,39 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import GoalCard from '@/components/GoalCard'
+import HistoryList from '@/components/HistoryList'
+import RankBadge from '@/components/RankBadge'
+import { fetchGoals, fetchHistory } from '@/lib/api'
+import { Goal, Achievement } from '@/types'
 
-export default function Page() {
-    const [name, setName] = useState('')
-    const [email, setEmail] = useState('')
-    const [message, setMessage] = useState('')
-    const [submitted, setSubmitted] = useState(false)
+export default function MyPage() {
+    const [goals, setGoals] = useState<Goal[]>([])
+    const [history, setHistory] = useState<Achievement[]>([])
+    const [rank, setRank] = useState(0)
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
-        // ここでAPIに送るなどの処理を行ってください
-        console.log({ name, email, message })
-        setSubmitted(true)
-        setName('')
-        setEmail('')
-        setMessage('')
-        setTimeout(() => setSubmitted(false), 3000)
-    }
+    useEffect(() => {
+        const loadData = async () => {
+            const goalsData = await fetchGoals()
+            const historyData = await fetchHistory()
+            setGoals(goalsData)
+            setHistory(historyData)
+            // ランクの計算ロジックを追加
+            const achievedCount = historyData.length
+            setRank(achievedCount)
+        }
+        loadData()
+    }, [])
 
     return (
         <main style={{ maxWidth: 640, margin: '2rem auto', padding: '1rem' }}>
-            <h1>簡単なフォーム</h1>
-            <form onSubmit={handleSubmit}>
-                <label style={{ display: 'block', marginBottom: 12 }}>
-                    名前
-                    <input
-                        type="text"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        required
-                        style={{ display: 'block', width: '100%', padding: 8, marginTop: 6 }}
-                    />
-                </label>
-
-                <label style={{ display: 'block', marginBottom: 12 }}>
-                    メール
-                    <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                        style={{ display: 'block', width: '100%', padding: 8, marginTop: 6 }}
-                    />
-                </label>
-
-                <label style={{ display: 'block', marginBottom: 12 }}>
-                    メッセージ
-                    <textarea
-                        value={message}
-                        onChange={(e) => setMessage(e.target.value)}
-                        rows={4}
-                        style={{ display: 'block', width: '100%', padding: 8, marginTop: 6 }}
-                    />
-                </label>
-
-                <button type="submit" style={{ padding: '8px 16px' }}>
-                    送信
-                </button>
-            </form>
-
-            {submitted && <p style={{ color: 'green', marginTop: 12 }}>送信しました。</p>}
+            <h1>マイページ</h1>
+            <RankBadge rank={rank} />
+            <h2>目標</h2>
+            {goals.map(goal => (
+                <GoalCard key={goal.id} goal={goal} />
+            ))}
+            <h2>達成履歴</h2>
+            <HistoryList history={history} />
         </main>
     )
 }
