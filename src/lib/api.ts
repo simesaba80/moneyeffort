@@ -4,7 +4,7 @@
 import type { Goal, Achievement } from "@/types";
 
 // Mock data matching src/types
-const defaultGoals: Goal[] = [
+export const MOCK_GOALS: Goal[] = [
   {
     id: "1",
     title: "毎日運動",
@@ -23,7 +23,7 @@ const defaultGoals: Goal[] = [
   },
 ];
 
-const mockHistory: Achievement[] = [
+export const MOCK_HISTORY: Achievement[] = [
   { id: "h1", goalId: "1", dateAchieved: new Date("2025-10-01") },
   { id: "h2", goalId: "2", dateAchieved: new Date("2025-10-02") },
   { id: "h3", goalId: "1", dateAchieved: new Date("2025-10-03") },
@@ -106,10 +106,10 @@ export async function fetchGoals(): Promise<Goal[]> {
     return localGoals;
   }
 
-  return defaultGoals;
+  return MOCK_GOALS;
 }
 
 export async function fetchHistory(): Promise<Achievement[]> {
   await new Promise((r) => setTimeout(r, 120));
-  return mockHistory;
+  return MOCK_HISTORY;
 }

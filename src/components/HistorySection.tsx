@@ -1,10 +1,11 @@
 import HistoryList from "@/components/HistoryList";
+import { MOCK_GOALS, MOCK_HISTORY } from "@/lib/api";
 import type { Achievement, Goal } from "@/types";
 import type { FC } from "react";
 
 interface HistorySectionProps {
-  history: Achievement[];
-  goals: Goal[];
+  history?: Achievement[];
+  goals?: Goal[];
   className?: string;
 }
 
@@ -19,6 +20,9 @@ const HistorySection: FC<HistorySectionProps> = ({
     ? `${baseClassName} ${className}`
     : baseClassName;
 
+  const historyData = history && history.length > 0 ? history : MOCK_HISTORY;
+  const goalsData = MOCK_GOALS;
+
   return (
     <section className={containerClassName}>
       <div className="flex items-center gap-3 border-b pb-3 mb-3">
@@ -28,8 +32,8 @@ const HistorySection: FC<HistorySectionProps> = ({
         <h2 className="text-2xl font-semibold text-gray-800">達成履歴</h2>
       </div>
       <HistoryList
-        history={history}
-        goals={goals}
+        history={historyData}
+        goals={goalsData}
         showHeader={false}
         className="text-sm"
       />
@@ -38,4 +42,3 @@ const HistorySection: FC<HistorySectionProps> = ({
 };
 
 export default HistorySection;
-
