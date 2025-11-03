@@ -70,4 +70,3 @@ const GoalsSection: FC<GoalsSectionProps> = ({
 };
 
 export default GoalsSection;
-

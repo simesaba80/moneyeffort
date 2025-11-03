@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import { Goal } from "@/types";
 
 interface GoalCardProps {
@@ -13,6 +14,7 @@ const GoalCard: React.FC<GoalCardProps> = ({
   renderActions,
 }) => {
   const { title, description, amount, deadline, achieved } = goal;
+  const goalDetailHref = `/achieve/${goal.id}`;
 
   const deadlineLabel = deadline
     ? new Date(deadline).toLocaleDateString("ja-JP")
@@ -24,8 +26,19 @@ const GoalCard: React.FC<GoalCardProps> = ({
     >
       <div className="flex flex-col gap-3">
         <div className="flex justify-between items-start gap-4">
-          <div>
-            <h3 className="text-lg font-semibold text-gray-700">{title}</h3>
+          <div className="flex-1">
+            <Link
+              href={goalDetailHref}
+              aria-label={`${title}の達成ページへ`}
+              className="group inline-flex items-center gap-2 text-left"
+            >
+              <h3 className="text-lg font-semibold text-gray-700 transition-colors group-hover:text-primary">
+                {title}
+              </h3>
+              <span className="text-xs font-semibold text-primary opacity-0 transition-opacity group-hover:opacity-100">
+                達成状況を見る
+              </span>
+            </Link>
             {description && (
               <p className="text-sm text-gray-500 mt-1">{description}</p>
             )}
