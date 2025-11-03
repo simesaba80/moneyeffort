@@ -4,40 +4,52 @@ import { Achievement as AchievementType, Goal } from '@/types'
 interface HistoryListProps {
     history: AchievementType[]
     goals?: Goal[]
+    className?: string
+    showHeader?: boolean
 }
 
-const HistoryList: React.FC<HistoryListProps> = ({ history, goals }) => {
+const HistoryList: React.FC<HistoryListProps> = ({ history, goals, className = '', showHeader = true }) => {
     if (!history || history.length === 0) {
         return (
-            <div>
-                <h2>達成履歴</h2>
-                <div>実績はありません</div>
+            <div className={`flex flex-col items-center justify-center gap-2 py-10 text-gray-500 ${className}`}>
+                {showHeader && <h2 className="text-lg font-semibold text-gray-700">達成履歴</h2>}
+                <p>実績はまだありません</p>
             </div>
         )
     }
 
-    // goals が渡されていれば goalId -> title のマップを作る
     const goalMap = new Map<string, Goal>()
     if (goals) {
         for (const g of goals) goalMap.set(g.id, g)
     }
 
     return (
-        <div>
-            <h2>達成履歴</h2>
-            <ul>
-                {history.map((achievement) => {
-                    const date = achievement.dateAchieved
-                        ? new Date(achievement.dateAchieved).toLocaleDateString()
-                        : '日付不明'
-                    const goalTitle = goalMap.get(achievement.goalId)?.title ?? `goal:${achievement.goalId}`
-                    return (
-                        <li key={achievement.id} style={{ marginBottom: 8 }}>
-                            <strong>{date}</strong> — {goalTitle}
-                        </li>
-                    )
-                })}
-            </ul>
+        <div className={className}>
+            {showHeader && <h2 className="sr-only">達成履歴</h2>}
+            <div className="max-h-[500px] overflow-y-auto">
+                <table className="w-full min-w-[480px] text-sm">
+                    <thead className="bg-gray-50">
+                        <tr>
+                            <th className="text-left px-3 py-2 font-semibold text-gray-600">達成日</th>
+                            <th className="text-left px-3 py-2 font-semibold text-gray-600">目標</th>
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200">
+                        {history.map((achievement) => {
+                            const date = achievement.dateAchieved
+                                ? new Date(achievement.dateAchieved).toLocaleDateString('ja-JP')
+                                : '日付不明'
+                            const goalTitle = goalMap.get(achievement.goalId)?.title ?? `goal:${achievement.goalId}`
+                            return (
+                                <tr key={achievement.id} className="hover:bg-gray-50">
+                                    <td className="px-3 py-2 text-gray-600">{date}</td>
+                                    <td className="px-3 py-2 font-medium text-gray-800">{goalTitle}</td>
+                                </tr>
+                            )
+                        })}
+                    </tbody>
+                </table>
+            </div>
         </div>
     )
 }
