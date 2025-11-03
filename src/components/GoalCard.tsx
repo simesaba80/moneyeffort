@@ -12,11 +12,11 @@ const GoalCard: React.FC<GoalCardProps> = ({
   className = "",
   renderActions,
 }) => {
-  const { title, description, dueDate, achieved } = goal;
+  const { title, description, amount, deadline, achieved } = goal;
 
-  const dueDateLabel = dueDate
-    ? new Date(dueDate).toLocaleDateString("ja-JP")
-    : "期日未設定";
+  const deadlineLabel = deadline
+    ? new Date(deadline).toLocaleDateString("ja-JP")
+    : "期限未設定";
 
   return (
     <div
@@ -43,7 +43,7 @@ const GoalCard: React.FC<GoalCardProps> = ({
           >
             {achieved ? "達成済み" : "未達成"}
           </span>
-          <span>期日: {dueDateLabel}</span>
+          <span>期限: {deadlineLabel}</span>
         </div>
       </div>
     </div>
