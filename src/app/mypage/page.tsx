@@ -121,7 +121,7 @@ export default function MyPage() {
 
   return (
     <div className="bg-gray-100 min-h-screen">
-      <header className="bg-primary text-white shadow-md">
+      <header className="bg-primary text-white shadow-md"style={{ backgroundColor: 'var(--accent)' }}>
         <nav className="container mx-auto px-6 py-4 flex justify-between items-center">
           <div className="text-2xl font-bold flex items-center gap-2">
             <span className="text-3xl">🎯</span>
