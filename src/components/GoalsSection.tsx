@@ -1,7 +1,9 @@
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
 import AddGoalButton from "@/components/add_goal";
 import GoalCard from "@/components/GoalCard";
 import type { Goal } from "@/types";
-import type { FC } from "react";
 
 interface GoalsSectionProps {
   ongoingGoals: Goal[];
@@ -12,15 +14,82 @@ interface GoalsSectionProps {
 
 const baseClassName = "bg-white rounded-lg shadow-lg p-6 flex flex-col";
 
-const GoalsSection: FC<GoalsSectionProps> = ({
+const isGoalLike = (value: unknown): value is Goal => {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const candidate = value as Partial<Goal>;
+  return (
+    typeof candidate.id === "string" &&
+    typeof candidate.title === "string" &&
+    typeof candidate.amount === "number" &&
+    typeof candidate.deadline === "string"
+  );
+};
+
+const GoalsSection = ({
   ongoingGoals,
   isLoading,
   className,
   onAchieveClick,
-}) => {
+}: GoalsSectionProps) => {
   const containerClassName = className
     ? `${baseClassName} ${className}`
     : baseClassName;
+
+  const [localGoals, setLocalGoals] = useState<Goal[]>([]);
+  const [isLocalLoading, setIsLocalLoading] = useState(true);
+  const [localError, setLocalError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const loadGoalsFromStorage = () => {
+      try {
+        const raw = window.localStorage.getItem("goal");
+        if (!raw) {
+          setLocalGoals([]);
+          setLocalError(null);
+          return;
+        }
+
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) {
+          setLocalGoals([]);
+          setLocalError("保存された目標データの形式が正しくありません。");
+          return;
+        }
+
+        const validGoals = parsed.filter(isGoalLike) as Goal[];
+        setLocalGoals(validGoals);
+        setLocalError(null);
+      } catch (error) {
+        setLocalGoals([]);
+        setLocalError("目標データの読み込み中にエラーが発生しました。");
+      }
+    };
+
+    loadGoalsFromStorage();
+    setIsLocalLoading(false);
+
+    const handleStorage = (event: StorageEvent) => {
+      if (event.key === "goal") {
+        loadGoalsFromStorage();
+      }
+    };
+
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, []);
+
+  const displayedGoals = useMemo(() => {
+    return localGoals.length > 0 ? localGoals : ongoingGoals;
+  }, [localGoals, ongoingGoals]);
+
+  const showLoading = isLoading || isLocalLoading;
 
   return (
     <section className={containerClassName}>
@@ -35,15 +104,21 @@ const GoalsSection: FC<GoalsSectionProps> = ({
       </header>
 
       <div className="flex-1 overflow-y-auto pr-2 space-y-4">
-        {isLoading && <p className="text-gray-500">読み込み中です...</p>}
+        {showLoading && <p className="text-gray-500">読み込み中です...</p>}
 
-        {!isLoading && ongoingGoals.length === 0 && (
+        {!showLoading && localError && (
+          <p className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-600">
+            {localError}
+          </p>
+        )}
+
+        {!showLoading && displayedGoals.length === 0 && (
           <div className="rounded-lg border border-dashed border-gray-300 bg-gray-50 p-6 text-center text-gray-500">
             進行中の目標はまだありません。新しい目標を追加しましょう！
           </div>
         )}
 
-        {ongoingGoals.map((goal) => (
+        {displayedGoals.map((goal) => (
           <GoalCard
             key={goal.id}
             goal={goal}
