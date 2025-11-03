@@ -15,7 +15,7 @@ export default function GoalPage() {
     return (
         <main className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-6">
             <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md text-[#486A8A]">
-                <h1 className="text-2xl font-bold mb-6 text-center">
+                <h1 className="text-2xl font-bold mb-6 text-center text-gray-600">
                     目標を設定しよう!
                 </h1>
 
@@ -66,13 +66,13 @@ export default function GoalPage() {
                 {submitted && (
                     <div className="mt-6 p-4 border-t border-[#486A8A] text-[#486A8A]">
                         <p>
-                            🎯 <strong>目標:</strong> {goal}
+                            <strong>目標:</strong> {goal}
                         </p>
                         <p>
-                            💰 <strong>金額:</strong> {amount} 円
+                            <strong>金額:</strong> {amount} 円
                         </p>
                         <p>
-                            ⏰ <strong>期限:</strong> {deadline}
+                            <strong>期限:</strong> {deadline}
                         </p>
                     </div>
                 )}
