@@ -4,16 +4,28 @@ import { useRouter } from "next/navigation";
 
 export default function AchievePage() {
     const router = useRouter();
+    const [goal, setGoal] = useState("");
+    const [amount, setAmount] = useState("");
+    const [deadline, setDeadline] = useState("");
     const [file, setFile] = useState<File | null>(null);
     const [showUpload, setShowUpload] = useState(false);
     const [countdown, setCountdown] = useState("");
 
-    // 固定の値
-    const goal = "ムキムキになる！";
-    const deadline = "2025-12-31T23:59:59";
-
-    // カウントダウン処理
+    // 🔹 localStorageからデータ取得
     useEffect(() => {
+        const savedGoal = localStorage.getItem("goal");
+        const savedAmount = localStorage.getItem("amount");
+        const savedDeadline = localStorage.getItem("deadline");
+
+        if (savedGoal) setGoal(savedGoal);
+        if (savedAmount) setAmount(savedAmount);
+        if (savedDeadline) setDeadline(savedDeadline);
+    }, []);
+
+    // 🔹 カウントダウン処理
+    useEffect(() => {
+        if (!deadline) return;
+
         const interval = setInterval(() => {
             const now = new Date().getTime();
             const target = new Date(deadline).getTime();
@@ -34,25 +46,18 @@ export default function AchievePage() {
         }, 1000);
 
         return () => clearInterval(interval);
-    }, []);
+    }, [deadline]);
 
-    const handleAchieved = () => {
-        setShowUpload(true);
+    const handleAchieved = () => setShowUpload(true);
+    const handleFailed = () => router.push("/mypage");
+    const handleBack = () => {
+        setShowUpload(false);
+        setFile(null);
     };
-
-    const handleFailed = () => {
-        router.push("/mypage");
-    };
-
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
             setFile(e.target.files[0]);
         }
-    };
-
-    const handleBack = () => {
-        setShowUpload(false);
-        setFile(null);
     };
 
     return (
@@ -60,13 +65,19 @@ export default function AchievePage() {
             <div className="bg-white rounded-2xl shadow-lg border border-[#486A8A] p-8 w-full max-w-md text-center">
                 <h1 className="text-2xl font-bold mb-4">達成度を確認しよう</h1>
 
-                <p className="text-lg font-semibold mb-2">
-                    目標: <span className="font-normal">{goal}</span>
-                </p>
-
-                <p className="text-md mb-4">
-                    残り時間: <strong>{countdown}</strong>
-                </p>
+                {goal && (
+                    <>
+                        <p className="text-lg font-semibold mb-1">
+                            目標: <span className="font-normal">{goal}</span>
+                        </p>
+                        <p className="text-md mb-1">
+                            金額: <strong>{amount}</strong> 円
+                        </p>
+                        <p className="text-md mb-4">
+                            残り時間: <strong>{countdown}</strong>
+                        </p>
+                    </>
+                )}
 
                 {!showUpload ? (
                     <div className="flex flex-col gap-4">
