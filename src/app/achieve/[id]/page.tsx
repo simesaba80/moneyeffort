@@ -135,9 +135,7 @@ export default function AchievePage({ params }: AchievePageProps) {
     ? new Date(goal.deadline).toLocaleDateString("ja-JP")
     : "期限未設定";
 
-  const amountLabel = goal
-    ? goal.amount.toLocaleString("ja-JP")
-    : undefined;
+  const amountLabel = goal ? goal.amount.toLocaleString("ja-JP") : undefined;
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center bg-white text-[#486A8A] p-6">
@@ -219,4 +217,3 @@ export default function AchievePage({ params }: AchievePageProps) {
     </main>
   );
 }
-
