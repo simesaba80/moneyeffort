@@ -34,7 +34,7 @@ export default function GoalPage() {
   };
 
   const handleNext = () => {
-    router.push("/achieve"); // 次のページへ遷移
+    router.push("/mypage"); // 次のページへ遷移
   };
 
   return (
